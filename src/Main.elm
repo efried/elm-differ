@@ -9,12 +9,9 @@ import Json.Decode exposing (Decoder, Value, decodeValue)
 import Matrix exposing (Matrix)
 
 
-type alias IntMatrix =
-    Matrix Int
-
-
 type Msg
-    = MatrixReceived IntMatrix
+    = MatrixReceived (Matrix Int)
+    | ToggleMatrix
     | FirstWord String
     | SecondWord String
     | SubmitLCS
@@ -31,6 +28,7 @@ type alias Model =
     , longestSubstring : String
     , firstWord : String
     , secondWord : String
+    , displayMatrix : Bool
     }
 
 
@@ -40,6 +38,7 @@ init () =
       , longestSubstring = ""
       , firstWord = ""
       , secondWord = ""
+      , displayMatrix = False
       }
     , Cmd.none
     )
@@ -59,6 +58,18 @@ update msg model =
             , Cmd.none
             )
 
+        ToggleMatrix ->
+            ( { model
+                | displayMatrix =
+                    if model.displayMatrix == True then
+                        False
+
+                    else
+                        True
+              }
+            , Cmd.none
+            )
+
         FirstWord word ->
             ( { model | firstWord = word }, Cmd.none )
 
@@ -74,7 +85,7 @@ listOfListDecoder =
     Json.Decode.list (Json.Decode.list Json.Decode.int)
 
 
-matrixDecoder : Value -> IntMatrix
+matrixDecoder : Value -> Matrix Int
 matrixDecoder =
     decodeValue
         (listOfListDecoder
@@ -112,9 +123,15 @@ view model =
             , viewInput "text" "Second Word" model.secondWord SecondWord
             , button [ onClick SubmitLCS ] [ text "Get Diff" ]
             ]
-        , viewPrettyMatrix model.lcs
-        , text ("Longest substring: " ++ model.longestSubstring ++ ", ")
-        , text ("Longest substring length: " ++ String.fromInt (getLongestCommonSubstringLength model.lcs))
+        , text ("Longest substring: \"" ++ model.longestSubstring ++ "\"")
+        , div []
+            [ button [ onClick ToggleMatrix ] [ text "View Matrix" ]
+            , if model.displayMatrix then
+                viewPrettyMatrix model.lcs
+
+              else
+                text ""
+            ]
         ]
 
 
@@ -126,16 +143,6 @@ main =
         , update = update
         , subscriptions = subscriptions
         }
-
-
-getLongestCommonSubstringLength : Matrix Int -> Int
-getLongestCommonSubstringLength matrix =
-    let
-        ( width, height ) =
-            Matrix.size matrix
-    in
-    Matrix.get width height matrix
-        |> Maybe.withDefault 0
 
 
 type alias LCSAccumulator =
@@ -203,6 +210,6 @@ getLongestCommonSubstring firstString secondString matrix =
                 values.result
 
             else
-                lcsReducer (getNextValues (Debug.log "values" values))
+                lcsReducer (getNextValues values)
     in
     lcsReducer initial

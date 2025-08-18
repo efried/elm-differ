@@ -762,7 +762,7 @@ ${indent.repeat(level)}}`;
   var WEBSOCKET_TOKEN = "93146fbf-c216-49b9-aeec-5d302e005a7d";
   var TARGET_NAME = "My target name";
   var INITIAL_ELM_COMPILED_TIMESTAMP = Number(
-    "1755466282773"
+    "1755522628033"
   );
   var ORIGINAL_COMPILATION_MODE = "debug";
   var ORIGINAL_BROWSER_UI_POSITION = "BottomLeft";
@@ -14051,7 +14051,7 @@ var $Punie$elm_matrix$Matrix$empty = $Punie$elm_matrix$Matrix$Matrix(
 	{mvect: $elm$core$Array$empty, ncols: 0, nrows: 0});
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{firstWord: '', lcs: $Punie$elm_matrix$Matrix$empty, longestSubstring: '', secondWord: ''},
+		{displayMatrix: false, firstWord: '', lcs: $Punie$elm_matrix$Matrix$empty, longestSubstring: '', secondWord: ''},
 		$elm$core$Platform$Cmd$none);
 };
 var $author$project$Main$MatrixReceived = function (a) {
@@ -14349,7 +14349,6 @@ var $author$project$Main$getCharacter = F2(
 			$elm$core$Array$fromList(
 				$elm$core$String$toList(val)));
 	});
-var $elm$core$Debug$log = _Debug_log;
 var $author$project$Main$getLongestCommonSubstring = F3(
 	function (firstString, secondString, matrix) {
 		var initial = {
@@ -14424,8 +14423,7 @@ var $author$project$Main$getLongestCommonSubstring = F3(
 				if ((!values.first) || (!values.second)) {
 					return values.result;
 				} else {
-					var $temp$values = getNextValues(
-						A2($elm$core$Debug$log, 'values', values));
+					var $temp$values = getNextValues(values);
 					values = $temp$values;
 					continue lcsReducer;
 				}
@@ -14447,6 +14445,14 @@ var $author$project$Main$update = F2(
 							longestSubstring: $elm$core$String$reverse(
 								$elm$core$String$fromList(
 									A3($author$project$Main$getLongestCommonSubstring, model.firstWord, model.secondWord, mtx)))
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'ToggleMatrix':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							displayMatrix: model.displayMatrix ? false : true
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 'FirstWord':
@@ -14477,28 +14483,7 @@ var $author$project$Main$SecondWord = function (a) {
 	return {$: 'SecondWord', a: a};
 };
 var $author$project$Main$SubmitLCS = {$: 'SubmitLCS'};
-var $Punie$elm_matrix$Matrix$height = function (_v0) {
-	var nrows = _v0.a.nrows;
-	return nrows;
-};
-var $Punie$elm_matrix$Matrix$width = function (_v0) {
-	var ncols = _v0.a.ncols;
-	return ncols;
-};
-var $Punie$elm_matrix$Matrix$size = function (m) {
-	return _Utils_Tuple2(
-		$Punie$elm_matrix$Matrix$height(m),
-		$Punie$elm_matrix$Matrix$width(m));
-};
-var $author$project$Main$getLongestCommonSubstringLength = function (matrix) {
-	var _v0 = $Punie$elm_matrix$Matrix$size(matrix);
-	var width = _v0.a;
-	var height = _v0.b;
-	return A2(
-		$elm$core$Maybe$withDefault,
-		0,
-		A3($Punie$elm_matrix$Matrix$get, width, height, matrix));
-};
+var $author$project$Main$ToggleMatrix = {$: 'ToggleMatrix'};
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
 var $author$project$Main$viewInput = F4(
 	function (t, p, v, toMsg) {
@@ -14544,6 +14529,10 @@ var $Punie$elm_matrix$Matrix$prettyPrint = F2(
 			}
 		}
 	});
+var $Punie$elm_matrix$Matrix$height = function (_v0) {
+	var nrows = _v0.a.nrows;
+	return nrows;
+};
 var $Punie$elm_matrix$Matrix$unsafeGet = F3(
 	function (i, j, m) {
 		unsafeGet:
@@ -14563,6 +14552,10 @@ var $Punie$elm_matrix$Matrix$unsafeGet = F3(
 			}
 		}
 	});
+var $Punie$elm_matrix$Matrix$width = function (_v0) {
+	var ncols = _v0.a.ncols;
+	return ncols;
+};
 var $Punie$elm_matrix$Matrix$toLists = function (m) {
 	return A2(
 		$elm$core$List$concatMap,
@@ -14632,14 +14625,27 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$text('Get Diff')
 							]))
 					])),
-				$author$project$Main$viewPrettyMatrix(model.lcs),
-				$elm$html$Html$text('Longest substring: ' + (model.longestSubstring + ', ')),
-				$elm$html$Html$text(
-				'Longest substring length: ' + $elm$core$String$fromInt(
-					$author$project$Main$getLongestCommonSubstringLength(model.lcs)))
+				$elm$html$Html$text('Longest substring: \"' + (model.longestSubstring + '\"')),
+				A2(
+				$elm$html$Html$div,
+				_List_Nil,
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$button,
+						_List_fromArray(
+							[
+								$elm$html$Html$Events$onClick($author$project$Main$ToggleMatrix)
+							]),
+						_List_fromArray(
+							[
+								$elm$html$Html$text('View Matrix')
+							])),
+						model.displayMatrix ? $author$project$Main$viewPrettyMatrix(model.lcs) : $elm$html$Html$text('')
+					]))
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Main.IntMatrix":{"args":[],"type":"Matrix.Matrix Basics.Int"},"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"}},"unions":{"Main.Msg":{"args":[],"tags":{"MatrixReceived":["Main.IntMatrix"],"FirstWord":["String.String"],"SecondWord":["String.String"],"SubmitLCS":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Matrix.Matrix":{"args":["a"],"tags":{"Matrix":["{ nrows : Basics.Int, ncols : Basics.Int, mvect : Array.Array a }"]}},"String.String":{"args":[],"tags":{"String":[]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}}}}})}});}(this));
+	$elm$json$Json$Decode$succeed(_Utils_Tuple0))({"versions":{"elm":"0.19.1"},"types":{"message":"Main.Msg","aliases":{"Array.Tree":{"args":["a"],"type":"Elm.JsArray.JsArray (Array.Node a)"}},"unions":{"Main.Msg":{"args":[],"tags":{"MatrixReceived":["Matrix.Matrix Basics.Int"],"ToggleMatrix":[],"FirstWord":["String.String"],"SecondWord":["String.String"],"SubmitLCS":[]}},"Basics.Int":{"args":[],"tags":{"Int":[]}},"Matrix.Matrix":{"args":["a"],"tags":{"Matrix":["{ nrows : Basics.Int, ncols : Basics.Int, mvect : Array.Array a }"]}},"String.String":{"args":[],"tags":{"String":[]}},"Array.Array":{"args":["a"],"tags":{"Array_elm_builtin":["Basics.Int","Basics.Int","Array.Tree a","Elm.JsArray.JsArray a"]}},"Elm.JsArray.JsArray":{"args":["a"],"tags":{"JsArray":["a"]}},"Array.Node":{"args":["a"],"tags":{"SubTree":["Array.Tree a"],"Leaf":["Elm.JsArray.JsArray a"]}}}}})}});}(this));
