@@ -10,7 +10,7 @@ import LCS exposing (lcs)
 type Msg
     = FirstWord String
     | SecondWord String
-    | SubmitLCS
+    | GetLCS
 
 
 type alias Model =
@@ -39,7 +39,7 @@ update msg model =
         SecondWord word ->
             ( { model | secondWord = word }, Cmd.none )
 
-        SubmitLCS ->
+        GetLCS ->
             let
                 mtx =
                     lcs model.firstWord model.secondWord
@@ -63,7 +63,7 @@ view model =
         [ div []
             [ viewInput "text" "First Word" model.firstWord FirstWord
             , viewInput "text" "Second Word" model.secondWord SecondWord
-            , button [ onClick SubmitLCS ] [ text "Get Diff" ]
+            , button [ onClick GetLCS ] [ text "Get Diff" ]
             ]
         , case model.longestSubstring of
             Just substring ->
