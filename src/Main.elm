@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, br, button, div, input, p, text)
-import Html.Attributes exposing (placeholder, type_, value)
+import Html.Attributes exposing (placeholder, style, type_, value)
 import Html.Events exposing (onClick, onInput)
 import LCS exposing (lcs)
 
@@ -14,7 +14,7 @@ type Msg
 
 
 type alias Model =
-    { longestSubstring : String
+    { longestSubstring : Maybe String
     , firstWord : String
     , secondWord : String
     }
@@ -22,7 +22,7 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init () =
-    ( { longestSubstring = ""
+    ( { longestSubstring = Nothing
       , firstWord = ""
       , secondWord = ""
       }
@@ -46,10 +46,7 @@ update msg model =
             in
             ( { model
                 | longestSubstring =
-                    lcs model.firstWord model.secondWord
-
-                -- |> String.fromList
-                -- |> String.reverse
+                    Just (lcs model.firstWord model.secondWord)
               }
             , Cmd.none
             )
@@ -68,7 +65,16 @@ view model =
             , viewInput "text" "Second Word" model.secondWord SecondWord
             , button [ onClick SubmitLCS ] [ text "Get Diff" ]
             ]
-        , text ("Longest substring: \"" ++ model.longestSubstring ++ "\"")
+        , case model.longestSubstring of
+            Just substring ->
+                if String.length substring > 0 then
+                    text substring
+
+                else
+                    div [ style "color" "red" ] [ text "No Common Substring" ]
+
+            Nothing ->
+                text ""
         ]
 
 
