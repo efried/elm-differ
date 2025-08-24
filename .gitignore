@@ -6,6 +6,7 @@ node_modules/*
 
 # Elm
 elm-stuff
+build
 elm.js
 dist
 main.js
